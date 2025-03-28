@@ -11,8 +11,8 @@ services:
       POSTGRES_DB: fa_service_db
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    #volumes:
+    #  - postgres_data:/var/lib/postgresql/data
 
   fastapi_app:
     build: .
@@ -24,8 +24,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres111@db:5432/fa_service_db
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+    #volumes:
+    #  - .:/app
     command: ["python", "app/main.py"]
 
 volumes:
