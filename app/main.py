@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.config.app_config import AUDIO_STORAGE_PATH
 from app.routers.audio_router import audio_router
+from app.database.database_helper import db_helper
 
 
 @asynccontextmanager
@@ -13,7 +14,7 @@ async def lifespan(app: FastAPI):
     # Убедимся, что директория для сохранения аудио файлов существует
     if not os.path.exists(AUDIO_STORAGE_PATH):
         os.makedirs(AUDIO_STORAGE_PATH)
-    # тут мы будем инициализировать базу данных
+    await db_helper.create_all()
     yield
 
 
