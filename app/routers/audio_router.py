@@ -22,7 +22,7 @@ async def upload_audio(
 
     file_location = f"audio_storage/{custom_name}.{file_extension}"
 
-    # Сохранение файла на диск
+    # Сохранение файла на диск в директории
     await ua_repo.save_audio(file, file_location)
 
     return {"filename": custom_name, "path": file_location}
