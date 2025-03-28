@@ -1,3 +1,32 @@
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+
 ALLOWED_AUDIO = {"mp3", "wav", "ogg", "flac", "aac"}
 AUDIO_STORAGE_PATH = "audio_storage"
 VALID_FILENAME_PATTERN = r"^[a-zA-Z0-9_\-\.]+$"
+
+
+# Загружаем переменные окружения
+load_dotenv()
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    SECRET_KEY: str
+    YANDEX_CLIENT_ID: str
+    YANDEX_CLIENT_SECRET: str
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+
+# Получаем настройки
+settings = Settings()
+
+# Теперь можно обращаться к настройкам через объект `settings`
+print(settings.DATABASE_URL)
+print(settings.SECRET_KEY)
+print(settings.YANDEX_CLIENT_ID)
+print(settings.YANDEX_CLIENT_SECRET)
