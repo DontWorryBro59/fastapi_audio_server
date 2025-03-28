@@ -24,9 +24,3 @@ class Settings(BaseSettings):
 
 # Получаем настройки
 settings = Settings()
-
-# Теперь можно обращаться к настройкам через объект `settings`
-print(settings.DATABASE_URL)
-print(settings.SECRET_KEY)
-print(settings.YANDEX_CLIENT_ID)
-print(settings.YANDEX_CLIENT_SECRET)
