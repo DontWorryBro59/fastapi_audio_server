@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres111
+      POSTGRES_DB: fa_service_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  fastapi_app:
+    build: .
+    container_name: fastapi_audio_service
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres111@db:5432/fa_service_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: ["python", "app/main.py"]
+
+volumes:
+  postgres_data:
+    driver: local
