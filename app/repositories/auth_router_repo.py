@@ -58,7 +58,7 @@ class AuthRepo:
                 )
 
     @classmethod
-    def create_jwt_tokens(cls, user_id: str) -> tuple[str, str]:
+    def create_jwt_tokens(cls, user_data: dict) -> tuple[str, str]:
         """Создаёт access_token и refresh_token"""
         access_expiration = datetime.utcnow() + timedelta(
             hours=settings.TOKEN_EXPIRE_HOURS
@@ -68,12 +68,12 @@ class AuthRepo:
         )
 
         access_payload = {
-            "user_id": user_id,
+            **user_data,
             "exp": access_expiration,
             "type": "access",
         }
         refresh_payload = {
-            "user_id": user_id,
+            "user_id": user_data["user_id"],
             "exp": refresh_expiration,
             "type": "refresh",
         }
@@ -81,7 +81,6 @@ class AuthRepo:
         access_token = jwt.encode(
             access_payload, settings.SECRET_KEY, algorithm="HS256"
         )
-        print(access_token)
         refresh_token = jwt.encode(
             refresh_payload, settings.SECRET_KEY, algorithm="HS256"
         )
@@ -89,7 +88,7 @@ class AuthRepo:
         return access_token, refresh_token
 
     @classmethod
-    def get_current_user(cls, access_token: str) -> dict:
+    def check_current_user(cls, access_token: str) -> dict:
         try:
             payload = jwt.decode(
                 access_token, settings.SECRET_KEY, algorithms=["HS256"]

@@ -18,7 +18,7 @@ audio_router = APIRouter(
 async def upload_audio(
     file: UploadFile = File(...),
     custom_name: str = Form(...),
-    user_info: str = Depends(AuthRepo.get_current_user),
+    user_info: str = Depends(AuthRepo.check_current_user),
 ) -> Sch_Upload_Audio:
 
     file_extension = file.filename.split(".")[-1].lower()

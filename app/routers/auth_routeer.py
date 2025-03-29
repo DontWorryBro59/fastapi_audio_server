@@ -30,18 +30,22 @@ async def yandex_callback(code: str, cid: str = None):
         )
     # Получаем User-ID пользователя с помощью токена
     user_info = await AuthRepo.get_user_info(access_token)
-    user_id = user_info.get("id")
 
-    if not user_id:
+    if not user_info["id"]:
         return JSONResponse(
             content={"error": "Не удалось получить ID пользователя"}, status_code=400
         )
 
+    user_data = {
+        "user_id": user_info["id"],
+        "user_real_name": user_info["real_name"],
+        "user_email": user_info["default_email"],
+    }
     # Создаём внутренние JWT токены на основе User-ID
-    new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_id)
+    new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_data)
 
     return {
-        "user_id": user_id,
+        "user_id": user_info["id"],
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
     }
