@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.config.app_config import AUDIO_STORAGE_PATH
 from app.routers.audio_router import audio_router
+from app.routers.auth_routeer import auth_router
 from app.database.database_helper import db_helper
 
 
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(audio_router)
+app.include_router(auth_router)
 
 
 if __name__ == "__main__":
