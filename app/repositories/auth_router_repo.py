@@ -3,8 +3,11 @@ from datetime import datetime, timedelta
 import aiohttp
 import jwt
 from fastapi import HTTPException
+from fastapi.security import OAuth2PasswordBearer
 
 from app.config.app_config import settings
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class AuthRepo:
@@ -70,8 +73,21 @@ class AuthRepo:
         access_token = jwt.encode(
             access_payload, settings.SECRET_KEY, algorithm="HS256"
         )
+        print(access_token)
         refresh_token = jwt.encode(
             refresh_payload, settings.SECRET_KEY, algorithm="HS256"
         )
 
         return access_token, refresh_token
+
+    @classmethod
+    def get_current_user(cls, access_token: str) -> dict:
+        try:
+            payload = jwt.decode(
+                access_token, settings.SECRET_KEY, algorithms=["HS256"]
+            )
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid token")
