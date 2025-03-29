@@ -67,8 +67,16 @@ class AuthRepo:
             days=settings.REFRESH_TOKEN_EXPIRE_DAYS
         )
 
-        access_payload = {"user_id": user_id, "exp": access_expiration}
-        refresh_payload = {"user_id": user_id, "exp": refresh_expiration}
+        access_payload = {
+            "user_id": user_id,
+            "exp": access_expiration,
+            "type": "access",
+        }
+        refresh_payload = {
+            "user_id": user_id,
+            "exp": refresh_expiration,
+            "type": "refresh",
+        }
 
         access_token = jwt.encode(
             access_payload, settings.SECRET_KEY, algorithm="HS256"
@@ -86,6 +94,10 @@ class AuthRepo:
             payload = jwt.decode(
                 access_token, settings.SECRET_KEY, algorithms=["HS256"]
             )
+
+            if payload.get("type") != "access":
+                raise HTTPException(status_code=401, detail="Invalid token")
+
             return payload
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token has expired")
