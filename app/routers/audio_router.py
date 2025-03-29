@@ -1,7 +1,11 @@
 import os
 
 from fastapi import APIRouter, UploadFile, File, Form, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    HTTPBearer,
+    HTTPAuthorizationCredentials,
+)
 
 from app.repositories.upload_audio_repo import ua_repo
 from app.schemas.response_schemas import Sch_Upload_Audio
@@ -13,13 +17,17 @@ audio_router = APIRouter(
     prefix="/audio",
 )
 
+security = HTTPBearer()
+
 
 @audio_router.post("/upload/")
 async def upload_audio(
     file: UploadFile = File(...),
     custom_name: str = Form(...),
-    user_info: str = Depends(AuthRepo.check_current_user),
+    user_info: HTTPAuthorizationCredentials = Depends(security),
 ) -> Sch_Upload_Audio:
+    # Декодируем токен и проверяем пользователя
+    user_info = AuthRepo.check_current_user(user_info.credentials)
 
     file_extension = file.filename.split(".")[-1].lower()
 
