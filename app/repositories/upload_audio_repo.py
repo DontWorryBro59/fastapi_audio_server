@@ -38,6 +38,3 @@ class UARepo:
     async def save_audio(cls, file, file_location):
         with open(file_location, "wb") as buffer:
             buffer.write(await file.read())
-
-
-ua_repo = UARepo()
