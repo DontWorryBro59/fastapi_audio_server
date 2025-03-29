@@ -1,11 +1,11 @@
 import jwt
-from fastapi import APIRouter, HTTPException, Body, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
 
 from app.config.app_config import settings
 from app.repositories.auth_router_repo import AuthRepo
+from app.repositories.users_db_repo import UserDB
 from database.database_helper import db_helper
-from app.routers.users_db_repo import UserDB
 
 auth_router = APIRouter(tags=["🔐 auth"], prefix="/auth")
 
@@ -48,9 +48,14 @@ async def yandex_callback(
     # Создаём внутренние JWT токены на основе User-ID
     new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_data)
 
-    # Тут будем писать данные в БД
-    ###################################################################
-    await UserDB.create_user(session=session, user_data=user_data)
+    # Записываем пользователя в БД, если его там нет
+    if (
+        await UserDB.get_user_by_yandex_id(
+            yandex_id=user_data.get("yandex_id"), session=session
+        )
+        is None
+    ):
+        await UserDB.create_user(session=session, user_data=user_data)
 
     return {
         "yandex_id": user_info["id"],

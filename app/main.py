@@ -5,9 +5,9 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.config.app_config import AUDIO_STORAGE_PATH
+from app.database.database_helper import db_helper
 from app.routers.audio_router import audio_router
 from app.routers.auth_routeer import auth_router
-from app.database.database_helper import db_helper
 
 
 @asynccontextmanager
