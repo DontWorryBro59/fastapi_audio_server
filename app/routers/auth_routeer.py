@@ -54,15 +54,18 @@ async def yandex_callback(code: str, cid: str = None):
 @auth_router.post("/refresh")
 async def refresh_token(refr_token: str):
     """Обновляет access_token по refresh_token"""
-    print(refr_token)
     try:
         payload = jwt.decode(refr_token, settings.SECRET_KEY, algorithms=["HS256"])
-        user_id = payload.get("user_id")
+        user_data = {
+            "user_id": payload.get("user_id"),
+            "user_real_name": payload.get("user_real_name"),
+            "user_email": payload.get("user_email"),
+        }
         type_token = payload.get("type")
-        if not user_id or type_token != "refresh":
+        if not user_data["user_id"] or type_token != "refresh":
             raise HTTPException(status_code=400, detail="Некорректный refresh_token")
 
-        new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_id)
+        new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_data)
         return {"access_token": new_access_token, "refresh_token": new_refresh_token}
 
     except jwt.ExpiredSignatureError:

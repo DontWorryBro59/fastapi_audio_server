@@ -73,7 +73,7 @@ class AuthRepo:
             "type": "access",
         }
         refresh_payload = {
-            "user_id": user_data["user_id"],
+            **user_data,
             "exp": refresh_expiration,
             "type": "refresh",
         }
