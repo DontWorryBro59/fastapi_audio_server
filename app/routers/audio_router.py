@@ -2,14 +2,13 @@ import os
 
 from fastapi import APIRouter, UploadFile, File, Form, Depends
 from fastapi.security import (
-    OAuth2PasswordBearer,
     HTTPBearer,
     HTTPAuthorizationCredentials,
 )
 
+from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.upload_audio_repo import ua_repo
 from app.schemas.response_schemas import Sch_Upload_Audio
-from app.repositories.auth_router_repo import AuthRepo
 from config.app_config import AUDIO_STORAGE_PATH
 
 audio_router = APIRouter(
