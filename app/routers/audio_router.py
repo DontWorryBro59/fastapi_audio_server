@@ -30,16 +30,18 @@ async def upload_audio(
 
     file_extension = file.filename.split(".")[-1].lower()
 
-    user_id = user_info["user_id"]
+    yandex_id = user_info["yandex_id"]
 
     # Проверка на допустимость имени файла и расширения файла
     ua_repo.check_valid_name(custom_name)
     ua_repo.check_valid_extension(file_extension)
-    # Создание директории пользователя, если она не существует
-    if not os.path.exists(f"{AUDIO_STORAGE_PATH}/{user_id}/"):
-        os.makedirs(f"{AUDIO_STORAGE_PATH}/{user_id}/")
 
-    file_location = f"{AUDIO_STORAGE_PATH}/{user_id}/{custom_name}.{file_extension}"
+    path = f"{AUDIO_STORAGE_PATH}/{yandex_id}/"
+    # Создание директории пользователя, если она не существует
+    if not os.path.exists(path):
+        os.makedirs(f"{path}")
+
+    file_location = f"{path}{custom_name}.{file_extension}"
 
     # Сохранение файла на диск в директории
     await ua_repo.save_audio(file, file_location)
