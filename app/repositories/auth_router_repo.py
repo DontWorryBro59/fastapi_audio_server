@@ -54,4 +54,24 @@ class AuthRepo:
                     status_code=e.status, detail=f"Ошибка Яндекса: {e.message}"
                 )
 
+    @classmethod
+    def create_jwt_tokens(cls, user_id: str) -> tuple[str, str]:
+        """Создаёт access_token и refresh_token"""
+        access_expiration = datetime.utcnow() + timedelta(
+            hours=settings.TOKEN_EXPIRE_HOURS
+        )
+        refresh_expiration = datetime.utcnow() + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
 
+        access_payload = {"user_id": user_id, "exp": access_expiration}
+        refresh_payload = {"user_id": user_id, "exp": refresh_expiration}
+
+        access_token = jwt.encode(
+            access_payload, settings.SECRET_KEY, algorithm="HS256"
+        )
+        refresh_token = jwt.encode(
+            refresh_payload, settings.SECRET_KEY, algorithm="HS256"
+        )
+
+        return access_token, refresh_token
