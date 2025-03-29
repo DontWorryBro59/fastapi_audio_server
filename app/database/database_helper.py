@@ -5,7 +5,7 @@ from app.config.app_config import settings
 from app.models.base_model import Base
 
 # Создаем асинхронный движок
-async_engine = create_async_engine(settings.DATABASE_URL, echo=True)
+async_engine = create_async_engine(settings.DATABASE_URL)
 
 
 # Сессия для асинхронных запросов
