@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     YANDEX_CLIENT_ID: str
     YANDEX_CLIENT_SECRET: str
+    TOKEN_EXPIRE_HOURS: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
 
     class Config:
         env_file = ".env"
