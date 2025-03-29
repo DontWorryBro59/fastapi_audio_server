@@ -10,7 +10,6 @@ class UserORM(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
     audio_files = relationship("AudioFile", back_populates="owner")
 
 
