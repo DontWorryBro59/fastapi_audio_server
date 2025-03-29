@@ -1,9 +1,11 @@
 import jwt
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from fastapi.responses import JSONResponse
 
 from app.config.app_config import settings
 from app.repositories.auth_router_repo import AuthRepo
+from database.database_helper import db_helper
+from app.routers.users_db_repo import UserDB
 
 auth_router = APIRouter(tags=["🔐 auth"], prefix="/auth")
 
@@ -16,7 +18,9 @@ async def yandex_auth():
 
 
 @auth_router.get("/yandex/callback")
-async def yandex_callback(code: str, cid: str = None):
+async def yandex_callback(
+    code: str, cid: str = None, session=Depends(db_helper.get_session)
+):
     token_data = await AuthRepo.get_yandex_token(code)
     if token_data.get("error"):
         return JSONResponse(content={"error": token_data.get("error")}, status_code=400)
@@ -37,15 +41,19 @@ async def yandex_callback(code: str, cid: str = None):
         )
 
     user_data = {
-        "user_id": user_info["id"],
-        "user_real_name": user_info["real_name"],
-        "user_email": user_info["default_email"],
+        "yandex_id": user_info["id"],
+        "username": user_info["real_name"],
+        "email": user_info["default_email"],
     }
     # Создаём внутренние JWT токены на основе User-ID
     new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_data)
 
+    # Тут будем писать данные в БД
+    ###################################################################
+    await UserDB.create_user(session=session, user_data=user_data)
+
     return {
-        "user_id": user_info["id"],
+        "yandex_id": user_info["id"],
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
     }
@@ -58,8 +66,8 @@ async def refresh_token(refr_token: str):
         payload = jwt.decode(refr_token, settings.SECRET_KEY, algorithms=["HS256"])
         user_data = {
             "user_id": payload.get("user_id"),
-            "user_real_name": payload.get("user_real_name"),
-            "user_email": payload.get("user_email"),
+            "username": payload.get("username"),
+            "email": payload.get("email"),
         }
         type_token = payload.get("type")
         if not user_data["user_id"] or type_token != "refresh":
