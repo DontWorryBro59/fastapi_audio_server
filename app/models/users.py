@@ -8,8 +8,8 @@ class UserORM(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    yandex_id: Mapped[int] = mapped_column(
-        Integer, unique=True, index=True, nullable=True
+    yandex_id: Mapped[str] = mapped_column(
+        String, unique=True, index=True, nullable=True
     )
     username: Mapped[str] = mapped_column(String, index=True, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
