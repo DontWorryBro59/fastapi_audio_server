@@ -22,3 +22,8 @@ class SchGetUser(ConfigResponse):
 class SchUpdateUser(BaseModel):
     username: Optional[str] = Field(default=None, max_length=255, min_length=3)
     email: Optional[EmailStr] = Field(default=None, max_length=255, min_length=3)
+
+
+class SchGetAudioFile(ConfigResponse):
+    filename: str
+    file_path: str
