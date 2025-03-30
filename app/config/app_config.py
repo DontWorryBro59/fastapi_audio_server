@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 ALLOWED_AUDIO = {"mp3", "wav", "ogg", "flac", "aac"}
@@ -8,7 +9,8 @@ VALID_FILENAME_PATTERN = r"^[a-zA-Z0-9_\-\.]+$"
 
 
 # Загружаем переменные окружения
-load_dotenv()
+if Path(".env").exists():
+    load_dotenv()
 
 
 class Settings(BaseSettings):
