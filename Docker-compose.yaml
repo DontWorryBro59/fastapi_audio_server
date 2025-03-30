@@ -6,25 +6,30 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres111
-      POSTGRES_DB: fa_service_db
+      POSTGRES_USER: #<--логин postgres
+      POSTGRES_PASSWORD: #<--пароль postgres
+      POSTGRES_DB: название #<--базы данных
     ports:
       - "5432:5432"
-    #volumes:
+    #volumes: <--- укажите тут корректное значения, чтобы данные БД сохранялись за пределами контейнера
     #  - postgres_data:/var/lib/postgresql/data
 
   fastapi_app:
-    build: .
+    image: dontworrybro/fastapi-audio-service:v1.0
     container_name: fastapi_audio_service
     restart: always
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres111@db:5432/fa_service_db
+      DATABASE_URL: #<--ссылка подключения к БД пример: "postgresql+asyncpg://postgres:postgres@db:5432/db_name"
+      SECRET_KEY: #<--секретный ключ для подписи JWT
+      YANDEX_CLIENT_ID: #<--клиент ID яндекса для аутентификации пользователя
+      YANDEX_CLIENT_SECRET: #<--секретный ключ яндекса для аутентификации пользователя
+      TOKEN_EXPIRE_HOURS: #<--время в часах (сколько будет действовать ACCESS токен)
+      REFRESH_TOKEN_EXPIRE_DAYS: #<--время в днях (сколько будет действовать REFRESH токен)
     ports:
       - "8000:8000"
-    #volumes:
+    #volumes: <--- укажите тут корректное значение, чтобы файлы сохранялись вне контейнера
     #  - .:/app
     command: ["python", "app/main.py"]
 
