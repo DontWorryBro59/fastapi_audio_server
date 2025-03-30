@@ -1,7 +1,9 @@
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.users import UserORM
+from schemas.schemas import SchUpdateUser
 
 
 class UserDB:
@@ -11,8 +13,6 @@ class UserDB:
         query = select(UserORM).where(UserORM.id == user_id)
         user = await session.execute(query)
         user = user.scalar_one_or_none()
-        if user is None:
-            return None
         return user
 
     @classmethod
@@ -20,8 +20,6 @@ class UserDB:
         query = select(UserORM).where(UserORM.yandex_id == yandex_id)
         user = await session.execute(query)
         user = user.scalar_one_or_none()
-        if user is None:
-            return None
         return user
 
     @classmethod
@@ -29,3 +27,5 @@ class UserDB:
         new_user = UserORM(**user_data)
         session.add(new_user)
         await session.commit()
+        return {"message": "user has been created"}
+
