@@ -18,7 +18,11 @@ from app.routers.admin_router import admin_router
 async def lifespan(app: FastAPI):
     # Убедимся, что директория для сохранения аудио файлов существует
     if not os.path.exists(AUDIO_STORAGE_PATH):
-        os.makedirs(AUDIO_STORAGE_PATH)
+        try:
+            os.makedirs(AUDIO_STORAGE_PATH)
+        except Exception as e:
+            raise Exception(f"Ошибка при создании директории для аудио: {e}")
+
     await db_helper.create_all()
     yield
 
