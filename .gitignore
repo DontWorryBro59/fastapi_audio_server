@@ -7,4 +7,4 @@ __pycache__/
 /html_examples/upload_file_form.html
 /audio_examples/1.mp3
 .env
-Docker-compose.yaml
+Docker-compose-with-secret.yaml

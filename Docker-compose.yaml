@@ -6,12 +6,12 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: #<--логин postgres
-      POSTGRES_PASSWORD: #<--пароль postgres
-      POSTGRES_DB: название #<--базы данных
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres111
+      POSTGRES_DB: fa_service_db
     ports:
       - "5432:5432"
-    #volumes: <--- укажите тут корректное значения, чтобы данные БД сохранялись за пределами контейнера
+    #volumes:
     #  - postgres_data:/var/lib/postgresql/data
 
   fastapi_app:
@@ -21,15 +21,15 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: #<--ссылка подключения к БД пример: "postgresql+asyncpg://postgres:postgres@db:5432/db_name"
-      SECRET_KEY: #<--секретный ключ для подписи JWT
-      YANDEX_CLIENT_ID: #<--клиент ID яндекса для аутентификации пользователя
-      YANDEX_CLIENT_SECRET: #<--секретный ключ яндекса для аутентификации пользователя
-      TOKEN_EXPIRE_HOURS: #<--время в часах (сколько будет действовать ACCESS токен)
-      REFRESH_TOKEN_EXPIRE_DAYS: #<--время в днях (сколько будет действовать REFRESH токен)
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres111@db:5432/fa_service_db
+      SECRET_KEY: c036deb905f7fb20da093e26cdc63d4ad48be6c5ca2561abf086fd47e7054b4e
+      YANDEX_CLIENT_ID: 0e1648c226ef45818fef83a9e17a7536
+      YANDEX_CLIENT_SECRET: f0555d175cae48219500c79f2f010aad
+      TOKEN_EXPIRE_HOURS: 1
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
     ports:
       - "8000:8000"
-    #volumes: <--- укажите тут корректное значение, чтобы файлы сохранялись вне контейнера
+    #volumes:
     #  - .:/app
     command: ["python", "app/main.py"]
 
