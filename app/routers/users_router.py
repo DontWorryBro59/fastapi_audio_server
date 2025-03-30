@@ -4,7 +4,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.database.database_helper import db_helper
 from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.users_db_repo import UserDB
-from app.schemas.schemas import SchGetUser, SchUpdateUser, SchGetAudioFile
+from app.schemas.schemas import SchGetUser, SchUpdateUser, SchGetAudioFile, SchUserChangeResponse
 
 users_router = APIRouter(tags=["🙍‍♂️ users"], prefix="/users")
 
@@ -30,7 +30,7 @@ async def change_user_info(
     update_data: SchUpdateUser,
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
-):
+) -> SchUserChangeResponse:
     user_info = AuthRepo.check_current_user(user_info.credentials)
     message = await UserDB.change_user(user_info["yandex_id"], update_data, session)
     return message
