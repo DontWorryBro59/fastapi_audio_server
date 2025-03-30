@@ -11,7 +11,7 @@ from app.repositories.audio_db_repo import AudioFileDB
 from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.upload_audio_repo import UARepo
 from config.app_config import AUDIO_STORAGE_PATH
-from schemas.schemas import AudioFileResponse
+from schemas.schemas import SchAudioFileResponse
 
 audio_router = APIRouter(
     tags=["🎼 Upload Audio"],
@@ -27,7 +27,7 @@ async def upload_audio(
     custom_name: str = Form(...),
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
-) -> AudioFileResponse:
+) -> SchAudioFileResponse:
     # Декодируем токен и проверяем пользователя
     user_info = AuthRepo.check_current_user(user_info.credentials)
 
