@@ -1,8 +1,11 @@
+from typing import List
+
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.users import UserORM
-from app.schemas.schemas import SchUpdateUser
+from app.models.users import UserORM, AudioFileORM
+from app.schemas.schemas import SchUpdateUser, SchGetAudioFile
 
 
 class UserDB:
@@ -41,3 +44,15 @@ class UserDB:
 
         await session.commit()
         return {"message": f"User with yandex id {yandex_id} has been changed"}
+
+    @classmethod
+    async def get_audios_list(cls, yandex_id: int, session: AsyncSession) -> List[SchGetAudioFile]:
+        user = await cls.get_user_by_yandex_id(yandex_id, session)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        query = select(AudioFileORM).where(AudioFileORM.user_id == user.id)
+        audios_list_orm = await session.execute(query)
+        audios_list = audios_list_orm.scalars().all()
+        audios_list = [SchGetAudioFile.model_validate(sound) for sound in audios_list]
+        return audios_list
