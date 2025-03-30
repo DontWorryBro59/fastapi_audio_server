@@ -29,12 +29,18 @@ async def yandex_callback(
     access_token = token_data.get("access_token")
 
     if not access_token:
-        raise HTTPException(status_code=status.HTTP_400, detail="Не удалось получить токены")
+        raise HTTPException(
+            status_code=status.HTTP_400,
+            detail="Не удалось получить токены"
+        )
     # Получаем User-ID пользователя с помощью токена
     user_info = await AuthRepo.get_user_info(access_token)
 
     if not user_info["id"]:
-        raise HTTPException(status_code=status.HTTP_400, detail="Не удалось получить ID пользователя")
+        raise HTTPException(
+            status_code=status.HTTP_400,
+            detail="Не удалось получить ID пользователя"
+        )
 
     user_data = {
         "yandex_id": user_info["id"],
