@@ -11,6 +11,7 @@
     - [1.2 Установка Docker Compose](#12-установка-docker-compose)
   - [Шаг 2: Подготовка файла docker-composeyml](#шаг-2-подготовка-файла-docker-composeyml)
   - [Шаг 3: Запуск контейнеров](#шаг-3-запуск-контейнеров)
+- [Интерфейс Swagger API](#интерфейс-swagger-api)
 
 ## Описание проекта
 
@@ -218,3 +219,6 @@ http://<ваш_сервер_IP>:8000/docs
 ```bash
 sudo docker-compose down
 ```
+
+## Интерфейс Swagger API
+![Интерфейс](doc/inter-doc.png)
