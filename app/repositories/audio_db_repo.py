@@ -11,7 +11,8 @@ class AudioFileDB:
     @classmethod
     async def create_audio(
         cls, yandex_id: str, filename: str, file_path: str, session: AsyncSession
-    ):
+    ) -> SchAudioFileResponse:
+        """Метод для записи данных об аудиофайле в БД"""
         query = select(UserORM).where(UserORM.yandex_id == yandex_id)
         user = await session.execute(query)
         user = user.scalar_one_or_none()
