@@ -11,6 +11,7 @@ from app.repositories.audio_db_repo import AudioFileDB
 from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.upload_audio_repo import UARepo
 from config.app_config import AUDIO_STORAGE_PATH
+from schemas.schemas import AudioFileResponse
 
 audio_router = APIRouter(
     tags=["🎼 Upload Audio"],
@@ -26,7 +27,7 @@ async def upload_audio(
     custom_name: str = Form(...),
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
-):
+) -> AudioFileResponse:
     # Декодируем токен и проверяем пользователя
     user_info = AuthRepo.check_current_user(user_info.credentials)
 
@@ -48,10 +49,10 @@ async def upload_audio(
         # Сохранение файла на диск в директории
         await UARepo.save_audio(file, file_location)
         # Сохранение информации о файле в базе данных
-        await AudioFileDB.create_audio(
+        response = await AudioFileDB.create_audio(
             yandex_id=yandex_id, filename=custom_name, file_path=path, session=session
         )
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to save/upload audio.")
 
-    return {"filename": custom_name, "path": file_location}
+    return response
