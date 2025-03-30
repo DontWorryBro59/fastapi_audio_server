@@ -9,7 +9,7 @@ from app.database.database_helper import db_helper
 
 # импорт маршрутов
 from app.routers.audio_router import audio_router
-from app.routers.auth_routeer import auth_router
+from app.routers.auth_router import auth_router
 from app.routers.users_router import users_router
 from app.routers.admin_router import admin_router
 
