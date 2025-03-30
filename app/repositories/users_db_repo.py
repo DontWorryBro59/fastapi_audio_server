@@ -29,3 +29,16 @@ class UserDB:
         await session.commit()
         return {"message": "user has been created"}
 
+    @classmethod
+    async def change_user(
+        cls, yandex_id: int, user_data: SchUpdateUser, session: AsyncSession
+    ):
+        user = await cls.get_user_by_yandex_id(yandex_id, session)
+
+        user_data = user_data.model_dump(exclude_none=True)
+
+        for key, value in user_data.items():
+            setattr(user, key, value)
+
+        await session.commit()
+        return {"message": f"User with yandex id {yandex_id} has been changed"}
