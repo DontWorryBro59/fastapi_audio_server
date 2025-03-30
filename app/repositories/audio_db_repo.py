@@ -22,4 +22,10 @@ class AudioFileDB:
             user_id=user.id, filename=filename, file_path=file_path
         )
         session.add(new_audio)
-        await session.commit()
+        try:
+            await session.commit()
+            return {"message": "Audio file created successfully", "audio_id": new_audio.id}
+        except Exception as e:
+            await session.rollback()
+            raise HTTPException(status_code=500, detail=f"Failed to create audio file: {str(e)}")
+
