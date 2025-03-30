@@ -1,5 +1,5 @@
 from typing import Optional
-import uuid
+
 from pydantic import BaseModel, EmailStr, Field
 
 # Обновленная конфигурация
@@ -48,3 +48,38 @@ class SchUserDeleteResponse(ConfigResponse):
                 "message": f"User with yandex_id [yandex_id] has been deleted",
             }
         }
+
+class SchUserChangeResponse(ConfigResponse):
+    message: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": f"User with yandex id [yandex_id] has been changed",
+            }
+        }
+
+class SchAuthResponse(BaseModel):
+    yandex_id: str
+    access_token: str
+    refresh_token: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "yandex_id": "123456",
+                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
+        }
+
+class SchAuthRedirectResponse(BaseModel):
+    redirect_url: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "redirect_url": "https://oauth.yandex.ru/authorize?response_type=code&client_id=123456"
+            }
+        }
+
