@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.database.database_helper import db_helper
@@ -15,10 +15,12 @@ security = HTTPBearer()
 async def get_user_info(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
-) -> SchGetUser:
+) -> SchGetUser | None:
     # Декодируем токен и проверяем пользователя
     user_info = AuthRepo.check_current_user(user_info.credentials)
     user_data = await UserDB.get_user_by_yandex_id(user_info["yandex_id"], session)
+    if user_data is None:
+        raise HTTPException(status_code=404, detail="User not found")
     user = SchGetUser.model_validate(user_data)
     return user
 
