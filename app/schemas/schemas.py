@@ -1,8 +1,8 @@
 from typing import Optional
-
+import uuid
 from pydantic import BaseModel, EmailStr, Field
 
-
+# Обновленная конфигурация
 class ConfigResponse(BaseModel):
     class Config:
         from_attributes = True
@@ -27,3 +27,14 @@ class SchUpdateUser(BaseModel):
 class SchGetAudioFile(ConfigResponse):
     filename: str
     file_path: str
+
+
+class AudioFileResponse(ConfigResponse):
+    message: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "Audio file created successfully",
+            }
+        }
