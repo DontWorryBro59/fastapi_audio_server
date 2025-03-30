@@ -29,12 +29,22 @@ class SchGetAudioFile(ConfigResponse):
     file_path: str
 
 
-class AudioFileResponse(ConfigResponse):
+class SchAudioFileResponse(ConfigResponse):
     message: str
 
     class Config:
         json_schema_extra = {
             "example": {
                 "message": "Audio file created successfully",
+            }
+        }
+
+class SchUserDeleteResponse(ConfigResponse):
+    message: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": f"User with yandex_id [yandex_id] has been deleted",
             }
         }
