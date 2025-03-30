@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.database_helper import db_helper
 from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.users_db_repo import UserDB
+from schemas.schemas import SchUserDeleteResponse
 
 admin_router = APIRouter(tags=["👨🏻‍💻 admin"], prefix="/admin")
 
@@ -15,8 +17,8 @@ security = HTTPBearer()
 async def delete_user(
     yandex_id: str,
     user_info: HTTPAuthorizationCredentials = Depends(security),
-    session=Depends(db_helper.get_session),
-):
+    session: AsyncSession = Depends(db_helper.get_session),
+) -> SchUserDeleteResponse:
 
     user_info = AuthRepo.check_current_user(user_info.credentials)
     user = await UserDB.get_user_by_yandex_id(user_info["yandex_id"], session)
