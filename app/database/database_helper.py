@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 
 from app.config.app_config import settings
 from app.models.base_model import Base
+from app.config.logger import get_logger
+
+logger = get_logger()
 
 # Создаем асинхронный движок
 async_engine = create_async_engine(settings.DATABASE_URL)
@@ -24,15 +27,18 @@ class DBHelper:
         """Создание всех таблиц в базе данных"""
         async with self.async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            logger.info("Таблицы в базе данных созданы")
 
     async def drop_all(self) -> None:
         """Удаление всех таблиц из базы данных"""
         async with self.async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
+            logger.info("Таблицы в базе данных удалены")
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Получение асинхронной сессии для работы с базой данных"""
         async with self.async_session_maker() as session:
+            logger.info("Сессия базы данных получена")
             yield session
 
 
