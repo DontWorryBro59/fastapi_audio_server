@@ -1,7 +1,10 @@
 .venv
 .idea
 app/audio_storage
+__pycache__/
+*.pyc
 /audio_examples/test.zip
 /html_examples/upload_file_form.html
 /audio_examples/1.mp3
 .env
+Docker-compose.yaml
