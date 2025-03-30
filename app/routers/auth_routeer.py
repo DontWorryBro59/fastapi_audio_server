@@ -1,5 +1,5 @@
 import jwt
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.responses import JSONResponse
 
 from app.config.app_config import settings
@@ -23,22 +23,18 @@ async def yandex_callback(
 ):
     token_data = await AuthRepo.get_yandex_token(code)
     if token_data.get("error"):
-        return JSONResponse(content={"error": token_data.get("error")}, status_code=400)
+        raise HTTPException(status_code=400, detail=token_data.get("error"))
 
     # Получаем токен пользователя
     access_token = token_data.get("access_token")
 
     if not access_token:
-        return JSONResponse(
-            content={"error": "Не удалось получить токены"}, status_code=400
-        )
+        raise HTTPException(status_code=status.HTTP_400, detail="Не удалось получить токены")
     # Получаем User-ID пользователя с помощью токена
     user_info = await AuthRepo.get_user_info(access_token)
 
     if not user_info["id"]:
-        return JSONResponse(
-            content={"error": "Не удалось получить ID пользователя"}, status_code=400
-        )
+        raise HTTPException(status_code=status.HTTP_400, detail="Не удалось получить ID пользователя")
 
     user_data = {
         "yandex_id": user_info["id"],
