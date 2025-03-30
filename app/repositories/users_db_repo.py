@@ -1,3 +1,5 @@
+import os
+import shutil
 from typing import List
 
 from fastapi import HTTPException
@@ -36,6 +38,8 @@ class UserDB:
         cls, yandex_id: int, user_data: SchUpdateUser, session: AsyncSession
     ) -> dict:
         user = await cls.get_user_by_yandex_id(yandex_id, session)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
 
         user_data = user_data.model_dump(exclude_none=True)
 
@@ -56,3 +60,25 @@ class UserDB:
         audios_list = audios_list_orm.scalars().all()
         audios_list = [SchGetAudioFile.model_validate(sound) for sound in audios_list]
         return audios_list
+
+    @classmethod
+    async def delete_user(cls, yandex_id: int, session: AsyncSession):
+        user = await cls.get_user_by_yandex_id(yandex_id, session)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # удаляем все аудиозаписи пользователя, прежде чем удалить самого пользователя
+        query = select(AudioFileORM).where(AudioFileORM.user_id == user.id)
+        audios_list = await session.execute(query)
+        audios_list = audios_list.scalars().all()
+        for audio in audios_list:
+            await session.delete(audio)
+        await session.delete(user)
+        await session.commit()
+        # удаляем все аудиозаписи пользователя из audio_storage
+        user_folder = os.path.join("audio_storage", user.yandex_id)
+        if os.path.exists(user_folder):
+            shutil.rmtree(user_folder)  # Удаляет папку со всем содержимым
+            print(f"Удалена папка: {user_folder}")
+
+        return {"message": f"user with yandex id {yandex_id} has been deleted"}
