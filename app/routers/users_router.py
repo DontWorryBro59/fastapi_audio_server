@@ -16,6 +16,7 @@ async def get_user_info(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
 ) -> SchGetUser | None:
+    """Получение информации о пользователе"""
     # Декодируем токен и проверяем пользователя
     user_info = AuthRepo.check_current_user(user_info.credentials)
     user_data = await UserDB.get_user_by_yandex_id(user_info["yandex_id"], session)
@@ -31,6 +32,7 @@ async def change_user_info(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
 ) -> SchUserChangeResponse:
+    """Изменение информации о пользователе"""
     user_info = AuthRepo.check_current_user(user_info.credentials)
     message = await UserDB.change_user(user_info["yandex_id"], update_data, session)
     return message
@@ -40,7 +42,7 @@ async def change_user_info(
 async def get_audios_list(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session)) -> list[SchGetAudioFile]:
-
+    """Получение списка аудиофайлов пользователя"""
     user_info = AuthRepo.check_current_user(user_info.credentials)
     audios_list = await UserDB.get_audios_list(user_info["yandex_id"], session)
     return audios_list
