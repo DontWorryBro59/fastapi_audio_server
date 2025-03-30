@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Integer, String, ForeignKey, UUID
+from sqlalchemy import Integer, String, ForeignKey, UUID, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from app.models.base_model import Base
@@ -17,6 +17,7 @@ class UserORM(Base):
     )
     username: Mapped[str] = mapped_column(String, index=True, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
+    superuser: Mapped[bool] = mapped_column(Boolean, default=False)
 
     audio_files: Mapped[list["AudioFileORM"]] = relationship(
         "AudioFileORM", back_populates="owner"
