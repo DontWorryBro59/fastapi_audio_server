@@ -29,7 +29,7 @@ class AuthRepo:
                     json_data = await response.json()
                     if not json_data:
                         raise HTTPException(
-                            status_code=500, detail="Пустой ответ от Яндекса"
+                            status_code=404, detail="Пустой ответ от Яндекса"
                         )
                     return json_data
             except aiohttp.ClientResponseError as e:
@@ -49,7 +49,7 @@ class AuthRepo:
                     json_data = await response.json()
                     if not json_data:
                         raise HTTPException(
-                            status_code=500, detail="Пустой ответ от Яндекса"
+                            status_code=404, detail="Пустой ответ от Яндекса"
                         )
                     return json_data
             except aiohttp.ClientResponseError as e:
