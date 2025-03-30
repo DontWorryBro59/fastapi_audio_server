@@ -4,14 +4,14 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.database.database_helper import db_helper
 from app.repositories.auth_router_repo import AuthRepo
 from app.repositories.users_db_repo import UserDB
-from app.schemas.schemas import SchGetUser, SchUpdateUser
+from app.schemas.schemas import SchGetUser, SchUpdateUser, SchGetAudioFile
 
-users_router = APIRouter(tags=["👤 users"], prefix="/users")
+users_router = APIRouter(tags=["🙍‍♂️ users"], prefix="/users")
 
 security = HTTPBearer()
 
 
-@users_router.get("/get_user_yaid/")
+@users_router.get("/get_user_info/")
 async def get_user_info(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
@@ -37,20 +37,8 @@ async def change_user_info(
 @users_router.get("/get_audios_list/")
 async def get_audios_list(
     user_info: HTTPAuthorizationCredentials = Depends(security),
-    session=Depends(db_helper.get_session)):
+    session=Depends(db_helper.get_session)) -> list[SchGetAudioFile]:
 
     user_info = AuthRepo.check_current_user(user_info.credentials)
     audios_list = await UserDB.get_audios_list(user_info["yandex_id"], session)
     return audios_list
-
-
-
-#Это необходимо реализовать для суперюзера
-@users_router.delete("/delete_user_by_admin/")
-async def delete_user(
-    user_info: HTTPAuthorizationCredentials = Depends(security),
-    session=Depends(db_helper.get_session),
-):
-
-    user_info = AuthRepo.check_current_user(user_info.credentials)
-    pass
