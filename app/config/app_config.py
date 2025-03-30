@@ -8,9 +8,7 @@ AUDIO_STORAGE_PATH = "audio_storage"
 VALID_FILENAME_PATTERN = r"^[a-zA-Z0-9_\-\.]+$"
 
 
-# Загружаем переменные окружения
-if Path(".env").exists():
-    load_dotenv()
+load_dotenv()
 
 
 class Settings(BaseSettings):
