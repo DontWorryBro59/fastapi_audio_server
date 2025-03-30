@@ -23,7 +23,7 @@ async def get_user_info(
     return user
 
 
-@users_router.patch("/")
+@users_router.patch("/change_user/")
 async def change_user_info(
     update_data: SchUpdateUser,
     user_info: HTTPAuthorizationCredentials = Depends(security),
@@ -34,8 +34,19 @@ async def change_user_info(
     return message
 
 
+@users_router.get("/get_audios_list/")
+async def get_audios_list(
+    user_info: HTTPAuthorizationCredentials = Depends(security),
+    session=Depends(db_helper.get_session)):
+
+    user_info = AuthRepo.check_current_user(user_info.credentials)
+    audios_list = await UserDB.get_audios_list(user_info["yandex_id"], session)
+    return audios_list
+
+
+
 #Это необходимо реализовать для суперюзера
-@users_router.delete("/")
+@users_router.delete("/delete_user_by_admin/")
 async def delete_user(
     user_info: HTTPAuthorizationCredentials = Depends(security),
     session=Depends(db_helper.get_session),
