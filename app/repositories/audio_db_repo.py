@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.users import UserORM, AudioFileORM
+from app.schemas.schemas import AudioFileResponse
 
 
 class AudioFileDB:
@@ -24,7 +25,7 @@ class AudioFileDB:
         session.add(new_audio)
         try:
             await session.commit()
-            return {"message": "Audio file created successfully", "audio_id": new_audio.id}
+            return AudioFileResponse(message="Audio file created successfully")
         except Exception as e:
             await session.rollback()
             raise HTTPException(status_code=500, detail=f"Failed to create audio file: {str(e)}")
