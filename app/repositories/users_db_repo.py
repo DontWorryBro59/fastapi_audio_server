@@ -7,7 +7,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.users import UserORM, AudioFileORM
-from app.schemas.schemas import SchUpdateUser, SchGetAudioFile, SchUserDeleteResponse
+from app.schemas.schemas import (
+    SchUpdateUser,
+    SchGetAudioFile,
+    SchUserDeleteResponse,
+    SchUserChangeResponse,
+)
 
 
 class UserDB:
@@ -21,7 +26,9 @@ class UserDB:
         return user
 
     @classmethod
-    async def get_user_by_yandex_id(cls, yandex_id: int, session: AsyncSession) -> UserORM | None:
+    async def get_user_by_yandex_id(
+        cls, yandex_id: int, session: AsyncSession
+    ) -> UserORM | None:
         """Метод для получения пользователя по yandex_id"""
         query = select(UserORM).where(UserORM.yandex_id == yandex_id)
         user = await session.execute(query)
@@ -39,22 +46,29 @@ class UserDB:
     @classmethod
     async def change_user(
         cls, yandex_id: int, user_data: SchUpdateUser, session: AsyncSession
-    ) -> dict:
+    ) -> SchUserChangeResponse:
         """Метод для изменения пользователя по yandex_id"""
         user = await cls.get_user_by_yandex_id(yandex_id, session)
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
 
-        user_data = user_data.model_dump(exclude_none=True)
+        user_data_dict = user_data.model_dump(
+            exclude_none=True
+        )  # ✅ Исправил переопределение
 
-        for key, value in user_data.items():
+        for key, value in user_data_dict.items():
             setattr(user, key, value)
 
         await session.commit()
-        return {"message": f"User with yandex id {yandex_id} has been changed"}
+
+        return SchUserChangeResponse(
+            message=f"User with yandex id {yandex_id} has been changed"
+        )
 
     @classmethod
-    async def get_audios_list(cls, yandex_id: int, session: AsyncSession) -> List[SchGetAudioFile]:
+    async def get_audios_list(
+        cls, yandex_id: int, session: AsyncSession
+    ) -> List[SchGetAudioFile]:
         """Метод для получения списка аудиозаписей пользователя по yandex_id"""
         user = await cls.get_user_by_yandex_id(yandex_id, session)
         if user is None:
@@ -67,7 +81,9 @@ class UserDB:
         return audios_list
 
     @classmethod
-    async def delete_user(cls, yandex_id: int, session: AsyncSession) -> SchUserDeleteResponse:
+    async def delete_user(
+        cls, yandex_id: int, session: AsyncSession
+    ) -> SchUserDeleteResponse:
         """Метод для удаления пользователя и всех его аудиозаписей из базы данных и папки в audio_storage"""
         user = await cls.get_user_by_yandex_id(yandex_id, session)
         if user is None:
@@ -87,4 +103,6 @@ class UserDB:
             shutil.rmtree(user_folder)  # Удаляет папку со всем содержимым
             print(f"Удалена папка: {user_folder}")
 
-        return SchUserDeleteResponse(message=f"user with yandex id {yandex_id} has been deleted")
+        return SchUserDeleteResponse(
+            message=f"user with yandex id {yandex_id} has been deleted"
+        )
