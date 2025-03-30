@@ -1,9 +1,8 @@
-from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.users import UserORM
-from app.schemas.schemas import SchUpdateUser, SchMessage
+from app.schemas.schemas import SchUpdateUser
 
 
 class UserDB:
