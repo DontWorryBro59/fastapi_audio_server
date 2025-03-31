@@ -1,11 +1,9 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, constr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class ConfigResponse(BaseModel):
-    class Config:
-        from_attributes = True
-        json_schema_extra = {}
+    model_config = {"from_attributes": True, "json_schema_extra": {}}
 
 
 class SchUploadAudio(ConfigResponse):
@@ -32,26 +30,29 @@ class SchGetAudioFile(ConfigResponse):
 class SchAudioFileResponse(ConfigResponse):
     message: str
 
-    class Config(ConfigResponse.Config):
-        json_schema_extra = {"example": {"message": "Audio file created successfully"}}
+    model_config = {
+        "json_schema_extra": {"example": {"message": "Audio file created successfully"}}
+    }
 
 
 class SchUserDeleteResponse(ConfigResponse):
     message: str
 
-    class Config(ConfigResponse.Config):
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {"message": "User with yandex_id {yandex_id} has been deleted"}
         }
+    }
 
 
 class SchUserChangeResponse(ConfigResponse):
     message: str
 
-    class Config(ConfigResponse.Config):
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {"message": "User with yandex id {yandex_id} has been changed"}
         }
+    }
 
 
 class SchAuthResponse(ConfigResponse):
@@ -59,22 +60,24 @@ class SchAuthResponse(ConfigResponse):
     access_token: str
     refresh_token: str
 
-    class Config(ConfigResponse.Config):
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "yandex_id": "123456",
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                 "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
             }
         }
+    }
 
 
 class SchAuthRedirectResponse(ConfigResponse):
     redirect_url: str
 
-    class Config(ConfigResponse.Config):
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "redirect_url": "https://oauth.yandex.ru/authorize?response_type=code&client_id=123456"
             }
         }
+    }
