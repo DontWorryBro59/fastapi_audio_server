@@ -168,7 +168,7 @@ services:
     environment:
       POSTGRES_USER: #<--логин postgres
       POSTGRES_PASSWORD: #<--пароль postgres
-      POSTGRES_DB: название #<--базы данных
+      POSTGRES_DB: #<--название базы данных
     ports:
       - "5432:5432"
     #volumes: <--- укажите тут корректное значения, чтобы данные БД сохранялись за пределами контейнера
