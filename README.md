@@ -82,9 +82,6 @@
  - **REFRESH_TOKEN_EXPIRE_DAYS** определение времени жизни Refresh-токена (в днях)
 
 ## Запуск проекта на сервере Linux
-# FastAPI Audio Service
-
-Этот проект представляет собой FastAPI сервис для работы с аудиофайлами, использующий PostgreSQL для хранения данных. В этом README представлен способ запуска приложения с помощью Docker и Docker Compose.
 
 ## Шаг 1. Установка Docker и Docker Compose на Linux
 
