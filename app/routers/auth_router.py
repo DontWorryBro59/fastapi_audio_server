@@ -82,11 +82,19 @@ async def yandex_callback(
 async def refresh_token(refr_token: str) -> SchAuthResponse:
     """Роутер для обновления токенов пользователя по refresh_token"""
     try:
-        logger.info(
-            f"Попытка обновления токенов с использованием refresh_token"
-        )
+        logger.info("Попытка обновления токенов с использованием refresh_token")
 
-        payload = jwt.decode(refr_token, settings.SECRET_KEY, algorithms=["HS256"])
+        # Декодируем токен
+        try:
+            payload = jwt.decode(refr_token, settings.SECRET_KEY, algorithms=["HS256"])
+            logger.info(f"Токен декодирован успешно. Payload: {payload}")
+        except jwt.ExpiredSignatureError:
+            logger.error("Refresh token истек")
+            raise HTTPException(status_code=401, detail="Refresh token истек")
+        except jwt.InvalidTokenError:
+            logger.error("Некорректный refresh_token")
+            raise HTTPException(status_code=401, detail="Некорректный refresh_token")
+
         user_data = {
             "yandex_id": payload.get("yandex_id"),
             "username": payload.get("username"),
@@ -98,22 +106,17 @@ async def refresh_token(refr_token: str) -> SchAuthResponse:
             logger.error(f"Некорректный refresh_token: {refr_token}")
             raise HTTPException(status_code=400, detail="Некорректный refresh_token")
 
+        # Создание новых токенов
         new_access_token, new_refresh_token = AuthRepo.create_jwt_tokens(user_data)
+        logger.info(f"Созданы новые токены для пользователя с Yandex ID: {user_data['yandex_id']}")
 
-        logger.info(
-            f"Созданы новые токены для пользователя с Yandex ID: {user_data['yandex_id']}"
-        )
-
+        # Возврат ответа
         return SchAuthResponse(
             yandex_id=user_data["yandex_id"],
             access_token=new_access_token,
             refresh_token=new_refresh_token,
         )
 
-    except jwt.ExpiredSignatureError:
-        logger.error("Refresh token истек")
-        raise HTTPException(status_code=401, detail="Refresh token истек")
-
-    except jwt.InvalidTokenError:
-        logger.error("Некорректный refresh_token")
-        raise HTTPException(status_code=401, detail="Некорректный refresh_token")
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении токенов: {str(e)}")
+        raise HTTPException(status_code=500, detail="Ошибка при обновлении токенов")
