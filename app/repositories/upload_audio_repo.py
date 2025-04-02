@@ -36,5 +36,6 @@ class UARepo:
 
     @classmethod
     async def save_audio(cls, file, file_location):
-        with open(file_location, "wb") as buffer:
-            buffer.write(await file.read())
+        async with aiofiles.open(file_location, "wb") as buffer:
+            await buffer.write(await file.read())
+        logger.info(f"Файл успешно сохранен по пути: {file_location}")
